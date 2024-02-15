@@ -241,7 +241,7 @@ export default class InitiativeTracker extends Plugin {
             if (this.canUseStatBlocks && this.statblocks.hasCreature(name)) {
                 return this.statblocks.getCreatureFromBestiary(name);
             }
-        } catch (e) {}
+        } catch (e) { }
         return null;
     }
     getCreatureFromBestiary(name: string) {
@@ -382,7 +382,7 @@ export default class InitiativeTracker extends Plugin {
                         this.app.metadataCache.getFileCache(file)?.frontmatter;
                     if (!frontmatter) return;
                     for (let player of players) {
-                        const { ac, hp, modifier, level, name } = frontmatter;
+                        const { ac, hp, curr_hp, modifier, level, name } = frontmatter;
                         player.ac = ac;
                         player.hp = hp;
                         player.modifier = modifier;
@@ -391,10 +391,13 @@ export default class InitiativeTracker extends Plugin {
                         player["statblock-link"] =
                             frontmatter["statblock-link"];
 
-                        this.playerCreatures.set(
-                            player.name,
-                            Creature.from(player)
-                        );
+                        console.log(`Setting curr_hp to ${curr_hp}`)
+                        if (!this.playerCreatures.has(player.name)) {
+                            this.playerCreatures.set(
+                                player.name,
+                                Creature.from(player)
+                            );
+                        }
                         if (this.view) {
                             const creature = tracker
                                 .getOrderedCreatures()
@@ -404,6 +407,7 @@ export default class InitiativeTracker extends Plugin {
                                     creature,
                                     change: {
                                         set_max_hp: player.hp,
+                                        set_hp: curr_hp,
                                         ac: player.ac
                                     }
                                 });
@@ -563,7 +567,7 @@ export default class InitiativeTracker extends Plugin {
                     } catch (e) {
                         new Notice(
                             "There was an issue launching the encounter.\n\n" +
-                                (e as Error).message
+                            (e as Error).message
                         );
                         console.error(e);
                         return;
