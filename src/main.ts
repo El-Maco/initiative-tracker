@@ -407,7 +407,7 @@ export default class InitiativeTracker extends Plugin {
                                     creature,
                                     change: {
                                         set_max_hp: player.hp,
-                                        set_hp: curr_hp,
+                                        set_hp: +curr_hp,
                                         ac: player.ac
                                     }
                                 });
